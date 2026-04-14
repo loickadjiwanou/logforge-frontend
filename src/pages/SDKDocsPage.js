@@ -561,7 +561,7 @@ except Exception as e:
                 <Code className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-emerald-400">{lang === 'fr' ? 'Disponible sur npm' : 'Available on npm'}</p>
-                  <code className="text-xs text-zinc-300 font-mono">npm install logforge-js</code>
+                  <code className="text-xs text-zinc-300 font-mono">npm install @loickadj/logforge-js</code>
                   <p className="text-[11px] text-zinc-500 pt-1">{lang === 'fr' ? 'Fonctionne dans le navigateur et Node.js 18+. Inclut les types TypeScript.' : 'Works in the browser and Node.js 18+. Includes TypeScript types.'}</p>
                 </div>
               </div>
@@ -911,7 +911,7 @@ except Exception as e:
               </div>
               <div>
                 <CardTitle className="text-sm text-white">{lang === 'fr' ? 'Référence Complète des SDKs' : 'Full SDK Reference'}</CardTitle>
-                <CardDescription className="text-xs text-zinc-500">{lang === 'fr' ? 'Documentation officielle — logforge-js (npm) et logforge-python (PyPI) — v0.1.8' : 'Official documentation — logforge-js (npm) and logforge-python (PyPI) — v0.1.8'}</CardDescription>
+                <CardDescription className="text-xs text-zinc-500">{lang === 'fr' ? 'Documentation officielle — @loickadj/logforge-js (npm) et logforge-py (PyPI) — v0.1.9' : 'Official documentation — @loickadj/logforge-js (npm) and logforge-py (PyPI) — v0.1.9'}</CardDescription>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -919,13 +919,13 @@ except Exception as e:
               {/* ── JS SDK ── */}
               <div className="space-y-5">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-yellow-500/90 flex items-center gap-2">
-                  JavaScript SDK — logforge-js
+                  JavaScript SDK — @loickadj/logforge-js
                   <Badge variant="outline" className="text-yellow-500 border-yellow-500/30 text-[10px]">npm</Badge>
                 </h3>
 
                 <div className="space-y-2">
                   <p className="text-xs font-mono text-zinc-400 uppercase tracking-widest">{lang === 'fr' ? 'Installation' : 'Installation'}</p>
-                  <CodeBlock code={`npm install logforge-js\n# yarn add logforge-js\n# pnpm add logforge-js`} lang="bash" />
+                  <CodeBlock code={`npm install @loickadj/logforge-js\n# yarn add @loickadj/logforge-js\n# pnpm add @loickadj/logforge-js`} lang="bash" />
                   <p className="text-[11px] text-zinc-500 flex items-center gap-1.5 pt-1">
                     <Info className="w-3 h-3 text-emerald-500" />
                     {lang === 'fr' ? 'TypeScript inclus — aucun package @types/ requis.' : 'TypeScript included — no @types/ package needed.'}
@@ -934,7 +934,7 @@ except Exception as e:
 
                 <div className="space-y-2">
                   <p className="text-xs font-mono text-zinc-400 uppercase tracking-widest">{lang === 'fr' ? 'Initialisation' : 'Initialization'}</p>
-                  <CodeBlock code={`import { LogForge } from 'logforge-js';\n// CommonJS: const { LogForge } = require('logforge-js');\n\nconst logger = new LogForge({\n  apiKey: 'YOUR_PROJECT_API_KEY',\n  endpoint: 'https://logs.myapp.com',\n  environment: 'production',\n  channel: 'default',\n  autocapture: true,   // auto-capture uncaught errors\n  debug: false,\n});`} lang="javascript" />
+                  <CodeBlock code={`import { LogForge } from '@loickadj/logforge-js';\n// CommonJS: const { LogForge } = require('@loickadj/logforge-js');\n\nconst logger = new LogForge({\n  apiKey: 'YOUR_PROJECT_API_KEY',\n  endpoint: 'https://logs.myapp.com',\n  environment: 'production',\n  channel: 'default',\n  autocapture: true,   // auto-capture uncaught errors\n  debug: false,\n});`} lang="javascript" />
                 </div>
 
                 <div className="space-y-2">
@@ -1015,7 +1015,7 @@ await logger.shutdown(); // flush() + arrêt du timer`} lang="javascript" />
 
                 <div className="space-y-2">
                   <p className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Node.js — {lang === 'fr' ? 'Arrêt propre' : 'Graceful Shutdown'}</p>
-                  <CodeBlock code={`// Appeler shutdown() avant la fin du processus pour ne perdre aucun log\nprocess.on('SIGTERM', async () => {\n  await logger.shutdown();\n  process.exit(0);\n});\n\n// Ou avec atexit-style :\nimport { shutdown } from 'logforge-js';\nprocess.on('exit', () => logger.shutdown());`} lang="javascript" />
+                  <CodeBlock code={`// Appeler shutdown() avant la fin du processus pour ne perdre aucun log\nprocess.on('SIGTERM', async () => {\n  await logger.shutdown();\n  process.exit(0);\n});\n\n// Ou avec atexit-style :\nimport { shutdown } from '@loickadj/logforge-js';\nprocess.on('exit', () => logger.shutdown());`} lang="javascript" />
                 </div>
               </div>
 
@@ -1024,13 +1024,13 @@ await logger.shutdown(); // flush() + arrêt du timer`} lang="javascript" />
               {/* ── Python SDK ── */}
               <div className="space-y-5">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400/90 flex items-center gap-2">
-                  Python SDK — logforge-python
+                  Python SDK — logforge-py
                   <Badge variant="outline" className="text-blue-400 border-blue-400/30 text-[10px]">PyPI</Badge>
                 </h3>
 
                 <div className="space-y-2">
                   <p className="text-xs font-mono text-zinc-400 uppercase tracking-widest">{lang === 'fr' ? 'Installation' : 'Installation'}</p>
-                  <CodeBlock code={`# Avec requests (recommandé)\npip install logforge-python[requests]\n\n# Avec httpx\npip install logforge-python[httpx]\n\n# Les deux backends\npip install logforge-python[all]`} lang="bash" />
+                  <CodeBlock code={`# Avec requests (recommandé)\npip install logforge-py[requests]\n\n# Avec httpx\npip install logforge-py[httpx]\n\n# Les deux backends\npip install logforge-py[all]`} lang="bash" />
                   <p className="text-[11px] text-zinc-500 flex items-center gap-1.5 pt-1">
                     <Info className="w-3 h-3 text-emerald-500" />
                     {lang === 'fr' ? 'Aucune dépendance obligatoire — choisissez le backend HTTP que vous utilisez déjà.' : 'No hard dependency — pick the HTTP backend you already use.'}

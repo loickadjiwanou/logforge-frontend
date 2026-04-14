@@ -15,18 +15,18 @@ const changelogData = [
     date: '2026-04-13',
     changes: {
       en: [
-        'Official JavaScript SDK (logforge-js): Published on npm. Full-featured browser + Node.js 18+ client with batching, auto-flush, retry with exponential backoff, autocapture of uncaught errors, session replay support, and TypeScript declarations.',
-        'Official Python SDK (logforge-python): Published on PyPI. Thread-safe client for Python 3.8+ with background flush thread, batch ingestion, capture_exception() with full traceback, and support for both requests and httpx HTTP backends.',
-        'SDK Installation: Install via npm (npm install logforge-js) or pip (pip install logforge-python[requests]). No copy-paste required.',
+        'Official JavaScript SDK (@loickadj/logforge-js): Published on npm. Full-featured browser + Node.js 18+ client with batching, auto-flush, retry with exponential backoff, autocapture of uncaught errors, session replay support, and TypeScript declarations.',
+        'Official Python SDK (logforge-py): Published on PyPI. Thread-safe client for Python 3.8+ with background flush thread, batch ingestion, capture_exception() with full traceback, and support for both requests and httpx HTTP backends.',
+        'SDK Installation: Install via npm (npm install @loickadj/logforge-js) or pip (pip install logforge-py[requests]). No copy-paste required.',
         'TypeScript Support: The JavaScript SDK ships with full .d.ts type declarations for first-class IDE autocompletion.',
         'SDK shutdown() / flush(): Both SDKs expose explicit flush() and shutdown() methods to guarantee log delivery before process exit.',
         'User Context API: setUser() / clearUser() methods available in both SDKs to attach persistent user metadata to all subsequent logs.',
         'Improved In-App SDK Docs: The SDK Documentation page now prominently displays npm and pip installation commands alongside the existing code samples.'
       ],
       fr: [
-        'SDK JavaScript Officiel (logforge-js) : Publié sur npm. Client complet pour navigateur + Node.js 18+ avec traitement par lots, auto-flush, réessais avec backoff exponentiel, capture automatique des erreurs non gérées, support Session Replay et déclarations TypeScript.',
-        'SDK Python Officiel (logforge-python) : Publié sur PyPI. Client thread-safe pour Python 3.8+ avec thread de flush en arrière-plan, ingestion par lots, capture_exception() avec traceback complet, et support de requests et httpx.',
-        'Installation des SDKs : Installation via npm (npm install logforge-js) ou pip (pip install logforge-python[requests]). Plus besoin de copier-coller le code.',
+        'SDK JavaScript Officiel (@loickadj/logforge-js) : Publié sur npm. Client complet pour navigateur + Node.js 18+ avec traitement par lots, auto-flush, réessais avec backoff exponentiel, capture automatique des erreurs non gérées, support Session Replay et déclarations TypeScript.',
+        'SDK Python Officiel (logforge-py) : Publié sur PyPI. Client thread-safe pour Python 3.8+ avec thread de flush en arrière-plan, ingestion par lots, capture_exception() avec traceback complet, et support de requests et httpx.',
+        'Installation des SDKs : Installation via npm (npm install @loickadj/logforge-js) ou pip (pip install logforge-py[requests]). Plus besoin de copier-coller le code.',
         'Support TypeScript : Le SDK JavaScript embarque des déclarations .d.ts complètes pour l\'autocomplétion IDE de premier ordre.',
         'Méthodes shutdown() / flush() : Les deux SDKs exposent des méthodes flush() et shutdown() explicites pour garantir la livraison des logs avant la fin du processus.',
         'API Contexte Utilisateur : Méthodes setUser() / clearUser() disponibles dans les deux SDKs pour attacher des métadonnées utilisateur persistantes à tous les logs suivants.',
