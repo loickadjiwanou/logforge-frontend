@@ -19,21 +19,21 @@ import AuthCallbackPage from './pages/AuthCallbackPage';
 import SetupPage from './pages/SetupPage';
 import ProfilePage from './pages/ProfilePage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
 import ErrorBoundary from './components/ui/error-boundary';
 import './App.css';
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading, isSetup } = useAuth();
-  if (loading || isSetup === null) return <div className="loading-screen"><div className="w-8 h-8 border-2 border-zinc-700 border-t-zinc-300 rounded-full animate-spin"></div></div>;
-  if (!isSetup) return <Navigate to="/setup" replace />;
+  const { user, loading } = useAuth();
+  if (loading) return <div className="loading-screen"><div className="w-8 h-8 border-2 border-zinc-700 border-t-zinc-300 rounded-full animate-spin"></div></div>;
   if (!user) return <Navigate to="/login" replace />;
   return children;
 };
 
 const PublicRoute = ({ children }) => {
-  const { user, loading, isSetup } = useAuth();
-  if (loading || isSetup === null) return <div className="loading-screen"><div className="w-8 h-8 border-2 border-zinc-700 border-t-zinc-300 rounded-full animate-spin"></div></div>;
-  if (!isSetup) return <Navigate to="/setup" replace />;
+  const { user, loading } = useAuth();
+  if (loading) return <div className="loading-screen"><div className="w-8 h-8 border-2 border-zinc-700 border-t-zinc-300 rounded-full animate-spin"></div></div>;
   if (user) return <Navigate to="/dashboard" replace />;
   return children;
 };
@@ -42,6 +42,8 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/setup" element={<ErrorBoundary><SetupPage /></ErrorBoundary>} />
+      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+      <Route path="/terms-of-service" element={<TermsOfServicePage />} />
       <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
       <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
       <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />

@@ -81,6 +81,10 @@ export default function ChannelsPage() {
   };
 
   const openNew = () => {
+    if (projects.length === 0) {
+      toast.warning(lang === 'fr' ? 'Créez d\'abord un projet dans la section Projets.' : 'Create a project first in the Projects section.');
+      return;
+    }
     setEditChannel(null);
     setForm({ name: '', description: '', project_id: projects[0]?.id || '' });
     setDialogOpen(true);
@@ -105,14 +109,11 @@ export default function ChannelsPage() {
               {projects.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
             </SelectContent>
           </Select>
+          <Button onClick={openNew} data-testid="create-channel-btn"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Plus className="w-4 h-4 mr-2" /> {t('newChannel')}
+          </Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={openNew} data-testid="create-channel-btn"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                disabled={projects.length === 0}>
-                <Plus className="w-4 h-4 mr-2" /> {t('newChannel')}
-              </Button>
-            </DialogTrigger>
             <DialogContent className="bg-zinc-950 border-zinc-800">
               <DialogHeader>
                 <DialogTitle className="text-white">{editChannel ? (lang === 'fr' ? 'Modifier le Canal' : 'Edit Channel') : (lang === 'fr' ? 'Créer un Canal' : 'Create Channel')}</DialogTitle>

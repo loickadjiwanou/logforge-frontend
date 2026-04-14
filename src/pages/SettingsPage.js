@@ -16,7 +16,7 @@ import { Separator } from '../components/ui/separator';
 import {
   Settings, Mail, Bell, Sun, Moon, Plus, Trash2, Edit2, Loader2, Send, Save,
   Palette, Shield, Upload, Image, Lock, Users, CheckCircle2, XCircle, LayoutDashboard,
-  Container, Zap, Terminal, Copy, RefreshCw, AlertCircle
+  Container, Zap, Terminal, Copy, RefreshCw, AlertCircle, UserPlus, MailCheck, Clock, X
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getPrimaryColor, setPrimaryColor, loadAppSettings } from '../lib/appColors';
@@ -110,6 +110,15 @@ export default function SettingsPage() {
   const [userToReset, setUserToReset] = useState(null);
   const [resettingPassword, setResettingPassword] = useState(false);
 
+  // Invitations
+  const [invitations, setInvitations] = useState([]);
+  const [invitationsLoading, setInvitationsLoading] = useState(false);
+  const [inviteEmails, setInviteEmails] = useState('');
+  const [inviting, setInviting] = useState(false);
+  const [showDeleteInvitationModal, setShowDeleteInvitationModal] = useState(false);
+  const [selectedInvitationId, setSelectedInvitationId] = useState(null);
+  const [resendingId, setResendingId] = useState(null);
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -153,6 +162,77 @@ export default function SettingsPage() {
   useEffect(() => {
     if (isAdmin) loadUsers();
   }, [isAdmin, loadUsers]);
+
+  const loadInvitations = useCallback(async () => {
+    if (!isAdmin) return;
+    setInvitationsLoading(true);
+    try {
+      const res = await api.get('/invitations/');
+      setInvitations(res.data.invitations || []);
+    } catch (e) {
+      toast.error('Failed to load invitations');
+    } finally {
+      setInvitationsLoading(false);
+    }
+  }, [isAdmin]);
+
+  const handleInvite = async () => {
+    const emails = inviteEmails.split(',').map(e => e.trim()).filter(Boolean);
+    if (!emails.length) return;
+    setInviting(true);
+    try {
+      const res = await api.post('/invitations/', { emails });
+      const results = res.data.results || [];
+      const sent = results.filter(r => r.status === 'invited').length;
+      const alreadyMember = results.filter(r => r.status === 'already_member').length;
+      const alreadyInvited = results.filter(r => r.status === 'already_invited').length;
+      if (sent > 0) toast.success(`${sent} ${t('invitationsSent')}`);
+      if (alreadyMember > 0) toast.info(`${alreadyMember} ${t('alreadyMember')}`);
+      if (alreadyInvited > 0) toast.info(`${alreadyInvited} ${t('alreadyInvited')}`);
+      setInviteEmails('');
+      loadInvitations();
+    } catch (err) {
+      const detail = err.response?.data?.detail;
+      if (detail === 'SMTP_NOT_CONFIGURED') {
+        toast.error(t('smtpRequiredForInvitations'));
+      } else {
+        toast.error(detail || 'Failed to send invitations');
+      }
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  const handleResendInvitation = async (id) => {
+    setResendingId(id);
+    try {
+      await api.post(`/invitations/${id}/resend`);
+      toast.success(t('invitationResent'));
+      loadInvitations();
+    } catch (err) {
+      const detail = err.response?.data?.detail;
+      if (detail === 'SMTP_NOT_CONFIGURED') {
+        toast.error(t('smtpRequiredForInvitations'));
+      } else {
+        toast.error(detail || 'Failed to resend invitation');
+      }
+    } finally {
+      setResendingId(null);
+    }
+  };
+
+  const handleDeleteInvitation = async (id) => {
+    try {
+      await api.delete(`/invitations/${id}`);
+      toast.success(t('invitationDeleted'));
+      setInvitations(prev => prev.filter(i => i.id !== id));
+    } catch {
+      toast.error('Failed to cancel invitation');
+    } finally {
+      setShowDeleteInvitationModal(false);
+      setSelectedInvitationId(null);
+    }
+  };
 
   const handleThemeChange = async (newTheme) => {
     setTheme(newTheme);
@@ -494,6 +574,12 @@ export default function SettingsPage() {
             <TabsTrigger value="roles" className="data-[state=active]:bg-zinc-800 text-xs" data-testid="tab-roles"
               onClick={loadUsers}>
               <Users className="w-3.5 h-3.5 mr-1.5" /> {lang === 'fr' ? 'Gestion Utilisateurs' : 'User Management'}
+            </TabsTrigger>
+          )}
+          {isAdmin && (
+            <TabsTrigger value="invitations" className="data-[state=active]:bg-zinc-800 text-xs" data-testid="tab-invitations"
+              onClick={loadInvitations}>
+              <UserPlus className="w-3.5 h-3.5 mr-1.5" /> {t('invitations')}
             </TabsTrigger>
           )}
           <TabsTrigger value="smtp" className="data-[state=active]:bg-zinc-800 text-xs" data-testid="tab-smtp">
@@ -1579,6 +1665,142 @@ export default function SettingsPage() {
         )}
 
         {isAdmin && (
+          <TabsContent value="invitations" className="mt-4 space-y-4">
+
+            {/* Send invitations card */}
+            <Card className="bg-zinc-950 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="text-sm text-white flex items-center gap-2">
+                  <UserPlus className="w-4 h-4 text-emerald-400" /> {t('inviteMembers')}
+                </CardTitle>
+                <CardDescription className="text-xs text-zinc-500">
+                  {lang === 'fr'
+                    ? 'Invitez des membres à rejoindre votre compagnie par email. Chaque personne recevra un lien d\'inscription.'
+                    : 'Invite members to join your company by email. Each person will receive a registration link.'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-2">
+                  <Input
+                    value={inviteEmails}
+                    onChange={(e) => setInviteEmails(e.target.value)}
+                    placeholder={t('inviteEmailsPlaceholder')}
+                    className="bg-zinc-900/50 border-zinc-800 text-white placeholder:text-zinc-600 flex-1"
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleInvite(); } }}
+                  />
+                  <Button
+                    onClick={handleInvite}
+                    disabled={inviting || !inviteEmails.trim()}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white shrink-0"
+                  >
+                    {inviting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    <span className="ml-2 hidden sm:inline">{inviting ? t('sending') : t('sendInvitations')}</span>
+                  </Button>
+                </div>
+                <p className="text-[11px] text-zinc-600">
+                  {lang === 'fr'
+                    ? 'Séparez plusieurs adresses par des virgules. Requiert une configuration SMTP active.'
+                    : 'Separate multiple addresses with commas. Requires an active SMTP configuration.'}
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Invitations list */}
+            <Card className="bg-zinc-950 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="text-sm text-white flex items-center gap-2">
+                  <MailCheck className="w-4 h-4 text-zinc-400" />
+                  {lang === 'fr' ? 'Invitations envoyées' : 'Sent Invitations'}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {invitationsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />
+                  </div>
+                ) : invitations.length === 0 ? (
+                  <p className="text-xs text-zinc-600 text-center py-6">{t('noInvitations')}</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-zinc-800">
+                        <TableHead className="text-zinc-500 text-xs">Email</TableHead>
+                        <TableHead className="text-zinc-500 text-xs">Status</TableHead>
+                        <TableHead className="text-zinc-500 text-xs hidden sm:table-cell">{t('invitedBy')}</TableHead>
+                        <TableHead className="text-zinc-500 text-xs hidden md:table-cell">{t('expiresOn')}</TableHead>
+                        <TableHead className="text-zinc-500 text-xs text-right">{t('actions')}</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {invitations.map((inv) => {
+                        const isExpired = inv.status === 'expired' ||
+                          (inv.status === 'pending' && new Date(inv.expires_at) < new Date());
+                        const statusKey = isExpired ? 'expired' : inv.status;
+                        return (
+                          <TableRow key={inv.id} className="border-zinc-900">
+                            <TableCell className="text-zinc-300 text-xs font-mono">{inv.email}</TableCell>
+                            <TableCell>
+                              <Badge className={`text-[10px] font-medium ${
+                                statusKey === 'accepted'
+                                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                                  : statusKey === 'expired'
+                                    ? 'bg-zinc-800 text-zinc-500 border-zinc-700'
+                                    : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                              }`}>
+                                {statusKey === 'accepted' && <CheckCircle2 className="w-3 h-3 mr-1" />}
+                                {statusKey === 'expired' && <XCircle className="w-3 h-3 mr-1" />}
+                                {statusKey === 'pending' && <Clock className="w-3 h-3 mr-1" />}
+                                {t(`invitationStatus_${statusKey}`)}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-zinc-500 text-xs hidden sm:table-cell">
+                              {inv.invited_by_name || '—'}
+                            </TableCell>
+                            <TableCell className="text-zinc-500 text-xs hidden md:table-cell">
+                              {inv.expires_at ? new Date(inv.expires_at).toLocaleDateString() : '—'}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                {inv.status !== 'accepted' && (
+                                  <Button
+                                    variant="ghost" size="sm"
+                                    className="h-7 px-2 text-xs text-zinc-400 hover:text-white"
+                                    disabled={resendingId === inv.id}
+                                    onClick={() => handleResendInvitation(inv.id)}
+                                  >
+                                    {resendingId === inv.id
+                                      ? <Loader2 className="w-3 h-3 animate-spin" />
+                                      : <RefreshCw className="w-3 h-3" />}
+                                    <span className="ml-1 hidden sm:inline">{t('resendInvitation')}</span>
+                                  </Button>
+                                )}
+                                {inv.status !== 'accepted' && (
+                                  <Button
+                                    variant="ghost" size="sm"
+                                    className="h-7 px-2 text-xs text-red-500 hover:text-red-400 hover:bg-red-500/5"
+                                    onClick={() => {
+                                      setSelectedInvitationId(inv.id);
+                                      setShowDeleteInvitationModal(true);
+                                    }}
+                                  >
+                                    <X className="w-3 h-3" />
+                                    <span className="ml-1 hidden sm:inline">{t('cancelInvitation')}</span>
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
+
+        {isAdmin && (
           <TabsContent value="security" className="mt-4 space-y-4">
             <Card className="bg-zinc-950 border-zinc-800">
               <CardHeader>
@@ -1881,13 +2103,23 @@ export default function SettingsPage() {
         open={resetModalOpen}
         onOpenChange={setResetModalOpen}
         title={lang === 'fr' ? "Réinitialiser le mot de passe" : "Reset Password"}
-        description={lang === 'fr' 
-          ? `Êtes-vous sûr de vouloir envoyer un e-mail de réinitialisation de mot de passe à ${userToReset?.email} ?` 
+        description={lang === 'fr'
+          ? `Êtes-vous sûr de vouloir envoyer un e-mail de réinitialisation de mot de passe à ${userToReset?.email} ?`
           : `Are you sure you want to send a password reset email to ${userToReset?.email}?`}
         onConfirm={handleTriggerPasswordReset}
         confirmText={lang === 'fr' ? "Envoyer" : "Send Email"}
         variant="primary"
         loading={resettingPassword}
+      />
+
+      <ConfirmModal
+        open={showDeleteInvitationModal}
+        onOpenChange={(open) => { setShowDeleteInvitationModal(open); if (!open) setSelectedInvitationId(null); }}
+        title={t('deleteInvitationConfirmTitle')}
+        description={t('deleteInvitationConfirmDesc')}
+        onConfirm={() => handleDeleteInvitation(selectedInvitationId)}
+        confirmText={t('cancelInvitation')}
+        variant="destructive"
       />
     </div>
   );

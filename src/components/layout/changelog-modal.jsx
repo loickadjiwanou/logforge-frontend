@@ -11,6 +11,42 @@ import { useLanguage } from '../../lib/LanguageContext';
 
 const changelogData = [
   {
+    version: '0.1.9',
+    date: '2026-04-14',
+    changes: {
+      en: [
+        'Multi-Company Support: The same email address can now belong to multiple independent workspaces. Each account is fully isolated with its own password, role, and permissions per company.',
+        'New 3-Step Login Flow: Login is now split into email lookup → workspace selection → password entry, so users with multiple workspaces can choose the right one before authenticating.',
+        'Email Lookup Endpoint: New /auth/email-lookup endpoint resolves which workspaces are associated with an email address without requiring a password.',
+        'Compound Unique Index: Replaced the global unique email index with a per-company (email, company_id) compound index enabling true multi-company membership.',
+        'OAuth Multi-Company Guard: GitHub and GitLab OAuth now detect when an email belongs to multiple workspaces and redirect the user to the email/password 3-step flow.',
+        'Docker Logs Permission UX: Members without the view_docker_logs permission now see a clear "Restricted Access" screen instead of being silently disconnected.',
+        'Sidebar Navigation Guard: Clicking Docker Logs in the sidebar without permission shows an inline explanation dialog instead of navigating to a forbidden page.',
+        'Session Stability Fix: 403 Forbidden responses no longer trigger automatic logout — only 401 Unauthorized does.',
+        'Channel Creation UX: Attempting to create a channel when no projects exist now shows an actionable toast message instead of a blocked button.',
+        'Invitation Expiry: Invitation links now expire after 24 hours (previously 7 days).',
+        'Forgot Password Dialog: The login page now shows a clear 3-step guide explaining the admin-triggered password reset flow.',
+        'ES Aggregation Fix: Corrected grouped log hash extraction from Elasticsearch buckets (b[\'key\'] instead of b[\'key\'][\'group\']).',
+        'Alert Email Fix: Removed duplicate HTML part in alert notification emails that caused double-body rendering.',
+      ],
+      fr: [
+        'Support Multi-Compagnie : Le même email peut désormais appartenir à plusieurs espaces de travail indépendants, chacun avec son propre mot de passe, rôle et permissions.',
+        'Nouveau Flux de Connexion en 3 Étapes : La connexion est désormais divisée en recherche d\'email → sélection du workspace → saisie du mot de passe.',
+        'Endpoint Email Lookup : Nouvel endpoint /auth/email-lookup qui identifie les workspaces associés à un email sans exiger de mot de passe.',
+        'Index Unique Composé : Remplacement de l\'index unique global sur l\'email par un index composé (email, company_id) permettant la vraie multi-appartenance.',
+        'Protection OAuth Multi-Compagnie : GitHub et GitLab OAuth détectent désormais si un email appartient à plusieurs workspaces et redirigent vers le flux 3 étapes.',
+        'UX Logs Docker : Les membres sans permission view_docker_logs voient un écran "Accès restreint" clair au lieu d\'être déconnectés silencieusement.',
+        'Garde de Navigation Sidebar : Cliquer sur Logs Docker sans permission affiche un dialog explicatif au lieu de naviguer vers une page interdite.',
+        'Stabilité de Session : Les réponses 403 Forbidden ne déclenchent plus de déconnexion automatique — seul le 401 Unauthorized le fait.',
+        'UX Création de Canal : Tenter de créer un canal sans projet affiche un message toast actionnable au lieu d\'un bouton bloqué.',
+        'Expiration des Invitations : Les liens d\'invitation expirent désormais après 24 heures (auparavant 7 jours).',
+        'Dialog Mot de Passe Oublié : La page de connexion affiche désormais un guide en 3 étapes expliquant le flux de réinitialisation déclenché par l\'administrateur.',
+        'Correction Agrégation ES : Extraction correcte du hash des groupes depuis les buckets Elasticsearch (b[\'key\'] au lieu de b[\'key\'][\'group\']).',
+        'Correction Email d\'Alerte : Suppression du corps HTML en double dans les emails d\'alerte qui causait un rendu dupliqué.',
+      ]
+    }
+  },
+  {
     version: '0.1.8',
     date: '2026-04-13',
     changes: {
@@ -371,7 +407,7 @@ export const ChangelogModal = ({ open, onOpenChange }) => {
         <DialogHeader>
           <DialogTitle className="text-white flex items-center gap-2">
             {t('changelog')}
-            <Badge variant="outline" className="text-emerald-500 border-emerald-500/30">v0.1.8</Badge>
+            <Badge variant="outline" className="text-emerald-500 border-emerald-500/30">v0.1.9</Badge>
           </DialogTitle>
           <DialogDescription className="text-zinc-500">
             {lang === 'fr' ? 'Historique des versions et changements récents' : 'Version history and recent changes'}

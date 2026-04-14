@@ -80,7 +80,6 @@ export default function DashboardPage() {
     try {
       // Robust construction: only append if not already present in WS_URL
       const fullWsUrl = WS_URL.includes('/api/ws/logs') ? WS_URL : `${WS_URL}/api/ws/logs`;
-      console.log('Connecting to WebSocket:', fullWsUrl);
       ws = new WebSocket(fullWsUrl);
       
       ws.onopen = () => {
@@ -101,9 +100,7 @@ export default function DashboardPage() {
           }
         } catch (e) { /* ignore */ }
       };
-      ws.onerror = () => {
-        console.warn("WebSocket error occurred.");
-      };
+      ws.onerror = () => {};
       wsRef.current = ws;
     } catch (e) {
       console.error("Failed to initialize WebSocket:", e);

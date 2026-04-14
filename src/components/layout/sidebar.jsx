@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../lib/AuthContext';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import {
   LayoutDashboard, Search, FolderKanban, Hash,
   BookOpen, Settings, LogOut, Shield, Layers,
@@ -30,12 +31,22 @@ const navItems = [
 ];
 
 export const Sidebar = ({ isCollapsed, toggleCollapse }) => {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, hasPermission } = useAuth();
   const { t, lang, appSettings } = useLanguage();
   const navigate = useNavigate();
   const [changelogOpen, setChangelogOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [logoutConfirmOpen, setlogoutConfirmOpen] = useState(false);
+  const [dockerAccessOpen, setDockerAccessOpen] = useState(false);
+
+  const canViewDocker = isAdmin || hasPermission('view_docker_logs');
+
+  const handleNavClick = (e, to) => {
+    if (to === '/logs/docker' && !canViewDocker) {
+      e.preventDefault();
+      setDockerAccessOpen(true);
+    }
+  };
 
   const handlelogout = () => {
     setlogoutConfirmOpen(true);
@@ -90,6 +101,7 @@ export const Sidebar = ({ isCollapsed, toggleCollapse }) => {
               to={to}
               end={to === '/logs'}
               data-testid={`nav-${labelKey}`}
+              onClick={(e) => handleNavClick(e, to)}
               className={({ isActive }) =>
                 `sidebar-link ${isActive ? 'sidebar-link-active' : ''} ${isCollapsed ? 'justify-center px-0' : ''}`
               }
@@ -150,11 +162,33 @@ export const Sidebar = ({ isCollapsed, toggleCollapse }) => {
       </div>
 
       <HelpModal open={helpOpen} onOpenChange={setHelpOpen} />
-      <LogoutConfirmModal 
-        open={logoutConfirmOpen} 
-        onOpenChange={setlogoutConfirmOpen} 
-        onConfirm={confirmlogout} 
+      <LogoutConfirmModal
+        open={logoutConfirmOpen}
+        onOpenChange={setlogoutConfirmOpen}
+        onConfirm={confirmlogout}
       />
+
+      <Dialog open={dockerAccessOpen} onOpenChange={setDockerAccessOpen}>
+        <DialogContent className="bg-zinc-950 border-zinc-800 max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Container className="w-4 h-4 text-zinc-400" />
+              {lang === 'fr' ? 'Accès restreint' : 'Restricted Access'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-1">
+            <p className="text-sm text-zinc-400">
+              {lang === 'fr'
+                ? "Vous n'avez pas la permission d'accéder aux logs Docker. Contactez un administrateur pour obtenir l'accès."
+                : "You don't have permission to access Docker Logs. Contact an administrator to request access."}
+            </p>
+            <p className="text-xs text-zinc-600">
+              {lang === 'fr' ? 'Permission requise : ' : 'Required permission: '}
+              <span className="font-mono text-zinc-500">view_docker_logs</span>
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </aside>
   );
 };

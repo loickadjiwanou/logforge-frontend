@@ -7,7 +7,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
-import { Rocket, ShieldCheck, UserPlus, CheckCircle2, ChevronRight, ChevronLeft, Loader2, Lock, Mail, User, Languages, Palette, Layout, Moon, Sun } from 'lucide-react';
+import { Rocket, ShieldCheck, UserPlus, ChevronRight, ChevronLeft, Loader2, Lock, Mail, User, Languages, Palette, Layout, Moon, Sun, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const PRESET_COLORS = [
@@ -27,20 +27,18 @@ const SetupPage = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    company_name: '',
     app_name: 'LogForge',
     primary_color: '#10b981',
     theme: 'dark'
   });
-  const { isSetup, checkSetupStatus, loginWithToken } = useAuth();
+  const [acceptPrivacy, setAcceptPrivacy] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const { checkSetupStatus, loginWithToken } = useAuth();
   const { t, lang, setLang } = useLanguage();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // If already setup, redirect to login
-    if (isSetup === true) {
-      navigate('/login');
-    }
-  }, [isSetup, navigate]);
+  // Setup page is always accessible — no redirect needed
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,6 +59,16 @@ const SetupPage = () => {
   };
 
   const handleNext = () => {
+    if (step === 2) {
+      if (!formData.company_name.trim()) {
+        toast.error(lang === 'fr' ? 'Le nom de la compagnie est requis.' : 'Company name is required.');
+        return;
+      }
+      if (!formData.app_name.trim()) {
+        toast.error(lang === 'fr' ? "Le nom de l'application est requis." : 'App name is required.');
+        return;
+      }
+    }
     setStep(prev => prev + 1);
   };
 
@@ -70,7 +78,12 @@ const SetupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    if (!acceptPrivacy || !acceptTerms) {
+      toast.error(t('mustAcceptTerms'));
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       toast.error(t('passwordsDoNotMatch'));
       return;
@@ -87,6 +100,7 @@ const SetupPage = () => {
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        company_name: formData.company_name,
         app_name: formData.app_name,
         primary_color: formData.primary_color,
         theme: formData.theme
@@ -234,10 +248,28 @@ const SetupPage = () => {
               </CardHeader>
               <CardContent className="pt-6 space-y-6">
                 <div className="space-y-2">
+                  <Label htmlFor="company_name" className={`${isDark ? 'text-zinc-300' : 'text-zinc-700'} ml-1`}>{t('companyName')}</Label>
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-3 w-4 h-4 text-zinc-500" />
+                    <Input
+                      id="company_name"
+                      name="company_name"
+                      type="text"
+                      placeholder={t('companyNamePlaceholder')}
+                      required
+                      value={formData.company_name}
+                      onChange={handleChange}
+                      className={`pl-10 h-11 focus:ring-zinc-500/20 rounded-xl transition-colors ${isDark ? 'bg-zinc-800/50 border-zinc-700 text-white' : 'bg-zinc-50 border-zinc-200 text-zinc-900'}`}
+                    />
+                  </div>
+                  <p className={`text-xs mt-1 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>{t('companyNameHelp')}</p>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="app_name" className={`${isDark ? 'text-zinc-300' : 'text-zinc-700'} ml-1`}>{t('appName')}</Label>
                   <div className="relative">
                     <Layout className="absolute left-3 top-3 w-4 h-4 text-zinc-500" />
-                    <Input 
+                    <Input
                       id="app_name"
                       name="app_name"
                       type="text"
@@ -378,20 +410,54 @@ const SetupPage = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* T&C acceptance */}
+                  <div className={`space-y-3 pt-2 border-t ${isDark ? 'border-zinc-800' : 'border-zinc-100'}`}>
+                    <label className={`flex items-start gap-3 cursor-pointer group`}>
+                      <input
+                        type="checkbox"
+                        checked={acceptPrivacy}
+                        onChange={(e) => setAcceptPrivacy(e.target.checked)}
+                        className="mt-0.5 accent-emerald-500 w-4 h-4 shrink-0"
+                      />
+                      <span className={`text-xs leading-relaxed ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                        {t('iAccept')}{' '}
+                        <a href="/privacy-policy" target="_blank" rel="noopener noreferrer"
+                          className="text-emerald-500 hover:underline font-medium" onClick={e => e.stopPropagation()}>
+                          {t('privacyPolicy')}
+                        </a>
+                      </span>
+                    </label>
+                    <label className={`flex items-start gap-3 cursor-pointer group`}>
+                      <input
+                        type="checkbox"
+                        checked={acceptTerms}
+                        onChange={(e) => setAcceptTerms(e.target.checked)}
+                        className="mt-0.5 accent-emerald-500 w-4 h-4 shrink-0"
+                      />
+                      <span className={`text-xs leading-relaxed ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                        {t('iAccept')}{' '}
+                        <a href="/terms-of-service" target="_blank" rel="noopener noreferrer"
+                          className="text-emerald-500 hover:underline font-medium" onClick={e => e.stopPropagation()}>
+                          {t('termsOfService')}
+                        </a>
+                      </span>
+                    </label>
+                  </div>
                 </CardContent>
                 <CardFooter className="pt-4 pb-8 flex gap-3">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={handleBack}
                     className={`flex-1 h-11 transition-colors ${isDark ? 'border-zinc-800 bg-transparent text-white hover:bg-zinc-800' : 'border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50'}`}
-                >
+                  >
                     <ChevronLeft className="mr-2 w-4 h-4" />
                     {t('back')}
-                </Button>
-                  <Button 
-                    type="submit" 
-                    disabled={loading}
-                    className="flex-[2] h-11 text-white hover:opacity-90 font-semibold rounded-xl flex items-center justify-center transition-all shadow-lg"
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={loading || !acceptPrivacy || !acceptTerms}
+                    className="flex-[2] h-11 text-white hover:opacity-90 font-semibold rounded-xl flex items-center justify-center transition-all shadow-lg disabled:opacity-50"
                     style={{ backgroundColor: formData.primary_color, boxShadow: `0 10px 15px -3px ${formData.primary_color}40` }}
                   >
                     {loading ? (
@@ -406,7 +472,7 @@ const SetupPage = () => {
 
         <div className="mt-8 text-center">
           <p className={`text-xs font-medium tracking-widest uppercase opacity-50 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-            v0.1.8 • {new Date().getFullYear()} {formData.app_name}
+            v0.1.9 • {new Date().getFullYear()} {formData.app_name}
           </p>
         </div>
       </div>

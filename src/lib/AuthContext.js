@@ -99,8 +99,10 @@ export const AuthProvider = ({ children }) => {
   }, [token, checkSetupStatus, applyTheme]);
 
 
-  const login = useCallback(async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
+  const login = useCallback(async (email, password, company_id = null) => {
+    const payload = { email, password };
+    if (company_id) payload.company_id = company_id;
+    const res = await api.post('/auth/login', payload);
     const { access_token, user: userData } = res.data;
     localStorage.setItem('logforge_token', access_token);
     setToken(access_token);
@@ -109,8 +111,8 @@ export const AuthProvider = ({ children }) => {
     return userData;
   }, [applyTheme]);
 
-  const signup = useCallback(async (email, password, name) => {
-    const res = await api.post('/auth/signup', { email, password, name });
+  const signup = useCallback(async (email, password, name, invitation_token) => {
+    const res = await api.post('/auth/signup', { email, password, name, invitation_token });
     const { access_token, user: userData } = res.data;
     localStorage.setItem('logforge_token', access_token);
     setToken(access_token);

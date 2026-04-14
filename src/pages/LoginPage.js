@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { Shield, Loader2 } from 'lucide-react';
+import { Shield, Loader2, Building2, ArrowLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 const GithubIcon = () => (
@@ -30,17 +30,54 @@ export default function LoginPage() {
   const { t, lang, appSettings } = useLanguage();
   const [contactAdminOpen, setContactAdminOpen] = useState(false);
   const [changelogOpen, setChangelogOpen] = useState(false);
+
+  // 3-step login state
+  const [step, setStep] = useState('email'); // 'email' | 'select_company' | 'password'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [companies, setCompanies] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null);
   const [loading, setLoading] = useState(false);
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  // Step 1: email lookup
+  const handleEmailSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(email, password);
+      const res = await api.post('/auth/email-lookup', { email });
+      const found = res.data.companies || [];
+      if (found.length === 0) {
+        // Don't reveal if account exists — go to password with no company (will fail at login)
+        setStep('password');
+      } else if (found.length === 1) {
+        setSelectedCompany(found[0]);
+        setStep('password');
+      } else {
+        setCompanies(found);
+        setStep('select_company');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Lookup failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Step 2: select company
+  const handleSelectCompany = (company) => {
+    setSelectedCompany(company);
+    setStep('password');
+  };
+
+  // Step 3: password + sign in
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await login(email, password, selectedCompany?.id || null);
       navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Login failed');
@@ -62,37 +99,178 @@ export default function LoginPage() {
     }
   };
 
+  const Logo = () => (
+    <div className="flex items-center gap-3 mb-8">
+      {appSettings?.logo_url
+        ? <img src={appSettings.logo_url} alt="logo" className="w-8 h-8 object-contain rounded" />
+        : <Shield className="w-8 h-8 text-emerald-500" strokeWidth={1.5} />}
+      <h1 className="font-mono font-bold text-2xl tracking-tight text-heading">
+        {appSettings?.app_name || 'LogForge'}
+      </h1>
+    </div>
+  );
+
+  // ── Step 1: Email ──────────────────────────────────────────────────────────
+  if (step === 'email') {
+    return (
+      <div className="auth-page" data-testid="login-page">
+        <div className="auth-container">
+          <Logo />
+          <Card className="auth-card">
+            <CardHeader className="space-y-1 pb-4">
+              <CardTitle className="text-xl font-semibold text-heading">{t('signIn')}</CardTitle>
+              <CardDescription className="text-muted-foreground">
+                {t('accessDashboard')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleEmailSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-xs font-medium text-muted-foreground">Email</Label>
+                  <Input
+                    id="email" type="email" value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com" required autoFocus
+                    data-testid="login-email-input"
+                    className="bg-zinc-900/50 border-zinc-800 text-heading placeholder:text-zinc-500"
+                  />
+                </div>
+                <Button
+                  type="submit" disabled={loading}
+                  data-testid="login-email-continue-btn"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+                  {lang === 'fr' ? 'Continuer' : 'Continue'}
+                </Button>
+              </form>
+
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-zinc-800" />
+                </div>
+                <div className="relative flex justify-center text-xs">
+                  <span className="bg-card px-2 text-muted-foreground">{t('orContinueWith')}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  variant="outline" onClick={() => handleOAuth('github')}
+                  data-testid="login-github-btn"
+                  className="border-zinc-800 text-zinc-300 hover:bg-zinc-800/50 hover:text-white"
+                >
+                  <GithubIcon /> <span className="ml-2">GitHub</span>
+                </Button>
+                <Button
+                  variant="outline" onClick={() => handleOAuth('gitlab')}
+                  data-testid="login-gitlab-btn"
+                  className="border-zinc-800 text-zinc-300 hover:bg-zinc-800/50 hover:text-white"
+                >
+                  <GitlabIcon /> <span className="ml-2">GitLab</span>
+                </Button>
+              </div>
+
+              <p className="text-center text-xs text-zinc-500 mt-6">
+                {t('dontHaveAccount') || "Don't have an account?"}{' '}
+                <Link to="/setup" className="text-emerald-500 hover:text-emerald-400 font-medium" data-testid="create-company-link">
+                  {t('createMyCompany') || 'Create my company'}
+                </Link>
+              </p>
+            </CardContent>
+          </Card>
+
+          <div className="mt-8 text-center space-y-2">
+            <button
+              onClick={() => setChangelogOpen(true)}
+              className="text-[11px] text-zinc-500 hover:text-emerald-500 transition-colors flex items-center justify-center gap-1.5 w-full font-medium"
+            >
+              <Info className="w-3.5 h-3.5" />
+              {t('version')}: v0.1.9
+            </button>
+            <p className="text-[11px] text-zinc-600 font-medium">
+              {appSettings?.app_name || 'LogForge'} v0.1.9 • {new Date().getFullYear()}.<br />
+              {lang === 'fr' ? 'Tous droits réservés.' : 'All rights reserved.'}
+            </p>
+          </div>
+        </div>
+        <ChangelogModal open={changelogOpen} onOpenChange={setChangelogOpen} />
+      </div>
+    );
+  }
+
+  // ── Step 2: Select Company ─────────────────────────────────────────────────
+  if (step === 'select_company') {
+    return (
+      <div className="auth-page" data-testid="login-page">
+        <div className="auth-container">
+          <Logo />
+          <Card className="auth-card">
+            <CardHeader className="space-y-1 pb-4">
+              <CardTitle className="text-xl font-semibold text-heading">
+                {lang === 'fr' ? 'Choisissez votre espace de travail' : 'Choose your workspace'}
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                {lang === 'fr'
+                  ? `Votre email est associé à ${companies.length} espaces de travail.`
+                  : `Your email is linked to ${companies.length} workspaces.`}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {companies.map((company) => (
+                <button
+                  key={company.id}
+                  onClick={() => handleSelectCompany(company)}
+                  className="w-full flex items-center justify-between gap-3 px-4 py-3.5 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800/70 hover:border-zinc-700 transition-all text-left group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                      <Building2 className="w-4 h-4 text-emerald-500" strokeWidth={1.5} />
+                    </div>
+                    <span className="text-sm font-medium text-white">{company.name}</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-zinc-400 transition-colors" />
+                </button>
+              ))}
+
+              <button
+                onClick={() => { setStep('email'); setCompanies([]); setSelectedCompany(null); }}
+                className="w-full flex items-center justify-center gap-2 mt-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors py-2"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                {lang === 'fr' ? 'Retour' : 'Back'}
+              </button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Step 3: Password ───────────────────────────────────────────────────────
   return (
     <div className="auth-page" data-testid="login-page">
       <div className="auth-container">
-        <div className="flex items-center gap-3 mb-8">
-          <Shield className="w-8 h-8 text-emerald-500" strokeWidth={1.5} />
-          <h1 className="font-mono font-bold text-2xl tracking-tight text-heading">{appSettings?.app_name || 'LogForge'}</h1>
-        </div>
-
+        <Logo />
         <Card className="auth-card">
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-xl font-semibold text-heading">{t('signIn')}</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              {t('accessDashboard')}
+            {selectedCompany && (
+              <div className="flex items-center gap-2 mt-1 px-3 py-2 rounded-lg bg-zinc-900/60 border border-zinc-800">
+                <Building2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" strokeWidth={1.5} />
+                <span className="text-xs text-zinc-400">{selectedCompany.name}</span>
+              </div>
+            )}
+            <CardDescription className="text-muted-foreground text-xs">
+              {email}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-xs font-medium text-muted-foreground">Email</Label>
-                <Input
-                  id="email" type="email" value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com" required
-                  data-testid="login-email-input"
-                  className="bg-zinc-900/50 border-zinc-800 text-heading placeholder:text-zinc-500"
-                />
-              </div>
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password" className="text-xs font-medium text-muted-foreground">{t('password')}</Label>
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setContactAdminOpen(true)}
                     className="text-[10px] font-medium text-emerald-500 hover:text-emerald-400"
@@ -104,7 +282,7 @@ export default function LoginPage() {
                 <Input
                   id="password" type="password" value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password" required
+                  placeholder="Enter your password" required autoFocus
                   data-testid="login-password-input"
                   className="bg-zinc-900/50 border-zinc-800 text-heading placeholder:text-zinc-500"
                 />
@@ -119,73 +297,76 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-zinc-800" />
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="bg-card px-2 text-muted-foreground">{t('orContinueWith')}</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                variant="outline" onClick={() => handleOAuth('github')}
-                data-testid="login-github-btn"
-                className="border-zinc-800 text-zinc-300 hover:bg-zinc-800/50 hover:text-white"
-              >
-                <GithubIcon /> <span className="ml-2">GitHub</span>
-              </Button>
-              <Button
-                variant="outline" onClick={() => handleOAuth('gitlab')}
-                data-testid="login-gitlab-btn"
-                className="border-zinc-800 text-zinc-300 hover:bg-zinc-800/50 hover:text-white"
-              >
-                <GitlabIcon /> <span className="ml-2">GitLab</span>
-              </Button>
-            </div>
-
-            <p className="text-center text-xs text-zinc-500 mt-6">
-              {t('dontHaveAccount') || "Don't have an account?"}{' '}
-              <Link to="/signup" className="text-emerald-500 hover:text-emerald-400" data-testid="signup-link">
-                {t('createOne') || 'Create one'}
-              </Link>
-            </p>
+            <button
+              onClick={() => {
+                setPassword('');
+                setStep(companies.length > 1 ? 'select_company' : 'email');
+              }}
+              className="w-full flex items-center justify-center gap-2 mt-4 text-xs text-zinc-500 hover:text-zinc-300 transition-colors py-2"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              {lang === 'fr' ? 'Retour' : 'Back'}
+            </button>
           </CardContent>
         </Card>
-
-        <div className="mt-8 text-center space-y-2">
-          <button 
-            onClick={() => setChangelogOpen(true)}
-            className="text-[11px] text-zinc-500 hover:text-emerald-500 transition-colors flex items-center justify-center gap-1.5 w-full font-medium"
-          >
-            <Info className="w-3.5 h-3.5" />
-            {t('version')}: v0.1.8
-          </button>
-          <p className="text-[11px] text-zinc-600 font-medium">
-               {appSettings?.app_name || 'LogForge'} v0.1.8 • {new Date().getFullYear()}.<br/>{lang === 'fr' ? 'Tous droits réservés.' : 'All rights reserved.'}
-          </p>
-        </div>
       </div>
-      <ChangelogModal open={changelogOpen} onOpenChange={setChangelogOpen} />
-      
+
       <Dialog open={contactAdminOpen} onOpenChange={setContactAdminOpen}>
         <DialogContent className="bg-zinc-950 border-zinc-800 sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center gap-2">
               <Mail className="w-5 h-5 text-emerald-500" />
-              {t('contactAdminTitle')}
+              {lang === 'fr' ? 'Récupération de mot de passe' : 'Password Recovery'}
             </DialogTitle>
-            <DialogDescription className="text-zinc-400 pt-2">
-              {t('contactAdminDesc')}
+            <DialogDescription className="text-zinc-400 pt-1">
+              {lang === 'fr'
+                ? 'La réinitialisation de mot de passe est gérée par votre administrateur.'
+                : 'Password resets are managed by your workspace administrator.'}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="mt-6">
+
+          <div className="space-y-3 py-1">
+            {[
+              {
+                step: '1',
+                label: lang === 'fr' ? 'Contactez votre administrateur' : 'Contact your administrator',
+                desc: lang === 'fr'
+                  ? 'Informez-le que vous avez besoin de réinitialiser votre mot de passe.'
+                  : 'Let them know you need to reset your password.'
+              },
+              {
+                step: '2',
+                label: lang === 'fr' ? "L'admin envoie le lien" : 'Admin sends the link',
+                desc: lang === 'fr'
+                  ? "Depuis la page Utilisateurs, il clique sur votre compte et déclenche l'envoi d'un email de réinitialisation."
+                  : 'From the Users page, they click your account and trigger a reset email.'
+              },
+              {
+                step: '3',
+                label: lang === 'fr' ? 'Vérifiez votre boîte mail' : 'Check your inbox',
+                desc: lang === 'fr'
+                  ? 'Vous recevrez un lien valable 1 heure pour définir un nouveau mot de passe.'
+                  : "You'll receive a link valid for 1 hour to set a new password."
+              }
+            ].map(({ step: s, label, desc }) => (
+              <div key={s} className="flex gap-3">
+                <div className="w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="text-[10px] font-bold text-emerald-500">{s}</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">{label}</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <DialogFooter className="mt-2">
             <Button
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
               onClick={() => setContactAdminOpen(false)}
             >
-              {t('close') || 'Close'}
+              {lang === 'fr' ? 'Compris' : 'Got it'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -29,6 +29,7 @@ export default function DockerLogsPage() {
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(50);
   const [loading, setLoading] = useState(false);
+  const [forbidden, setForbidden] = useState(false);
   const [containers, setContainers] = useState([]);
   const [filters, setFilters] = useState({
     level: searchParams.get('level') || '', 
@@ -57,7 +58,11 @@ export default function DockerLogsPage() {
       setLogs(res.data.logs || []);
       setTotal(res.data.total || 0);
     } catch (err) {
-      console.error('Failed to fetch docker logs', err);
+      if (err.response?.status === 403) {
+        setForbidden(true);
+      } else {
+        console.error('Failed to fetch docker logs', err);
+      }
     } finally {
       setLoading(false);
     }
@@ -67,7 +72,9 @@ export default function DockerLogsPage() {
     try {
       const res = await api.get('/logs/docker/containers');
       setContainers(res.data.containers || []);
-    } catch (e) { /* ignore */ }
+    } catch (e) {
+      if (e.response?.status === 403) setForbidden(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -117,6 +124,23 @@ export default function DockerLogsPage() {
 
   const totalPages = Math.ceil(total / size);
   const hasActiveFilters = filters.search || filters.level || filters.container_name || filters.date_from || filters.date_to;
+
+  if (forbidden) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+        <Container className="w-12 h-12 text-zinc-700" />
+        <h2 className="text-lg font-semibold text-white">
+          {lang === 'fr' ? 'Accès restreint' : 'Restricted Access'}
+        </h2>
+        <p className="text-sm text-zinc-500 max-w-sm">
+          {lang === 'fr'
+            ? "Vous n'avez pas la permission d'accéder aux logs Docker. Contactez un administrateur pour obtenir l'accès."
+            : "You don't have permission to access Docker Logs. Contact an administrator to request access."}
+        </p>
+        <p className="text-xs text-zinc-600 font-mono">view_docker_logs</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-4" data-testid="docker-logs-page">

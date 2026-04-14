@@ -159,7 +159,7 @@ export const HelpModal = ({ open, onOpenChange }) => {
                 : 'If you can\'t find the answer to your question, feel free to contact your instance administrator or consult the full technical documentation.'}
             </p>
             <div className="text-[10px] font-mono text-emerald-500">
-              {appSettings?.app_name || 'LogForge'} v0.1.8 • {new Date().getFullYear()}
+              {appSettings?.app_name || 'LogForge'} v0.1.9 • {new Date().getFullYear()}
             </div>
           </div>
         </div>
