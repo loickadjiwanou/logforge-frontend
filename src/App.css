@@ -1,0 +1,438 @@
+/* App Layout */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+}
+
+.app-main {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    min-width: 240px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid hsl(var(--border));
+    background: hsl(var(--sidebar-bg));
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.collapsed {
+    width: 72px;
+    min-width: 72px;
+}
+
+.sidebar-header {
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid hsl(var(--border));
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+    transition: color 0.15s, background-color 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar-link:hover {
+    color: hsl(var(--foreground));
+    background: hsl(var(--accent));
+}
+
+.sidebar-link-active {
+    color: hsl(var(--foreground));
+    background: hsl(var(--accent));
+}
+
+/* Auth Pages */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(var(--background));
+    padding: 1.5rem;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-card {
+    background: hsl(var(--card)) !important;
+    border-color: hsl(var(--border)) !important;
+}
+
+/* Loading Screen */
+.loading-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(var(--background));
+    color: hsl(var(--muted-foreground));
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+}
+
+/* Code Blocks */
+.code-block {
+    background: hsl(var(--code-bg));
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    line-height: 1.6;
+    color: hsl(var(--code-fg));
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+}
+
+
+
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.5);
+    }
+}
+
+/* Theme-aware utility classes */
+.surface-primary {
+    background: hsl(var(--background));
+}
+
+.surface-card {
+    background: hsl(var(--card));
+    border-color: hsl(var(--border));
+}
+
+.surface-elevated {
+    background: hsl(var(--elevated-bg));
+    border-color: hsl(var(--border));
+}
+
+.text-heading {
+    color: hsl(var(--foreground));
+}
+
+.text-body {
+    color: hsl(var(--muted-foreground));
+}
+
+.input-field {
+    background: hsl(var(--input-bg));
+    border-color: hsl(var(--border));
+    color: hsl(var(--foreground));
+}
+
+/* =================================================================
+   LIGHT THEME OVERRIDES
+   Override hardcoded dark zinc Tailwind classes used across all pages
+   ================================================================= */
+
+/* Backgrounds */
+.light .bg-zinc-950 {
+    background-color: hsl(0 0% 98%) !important;
+}
+
+.light .bg-zinc-900 {
+    background-color: hsl(0 0% 93%) !important;
+}
+
+.light .bg-zinc-800 {
+    background-color: hsl(0 0% 86%) !important;
+}
+
+/* Borders */
+.light .border-zinc-800 {
+    border-color: hsl(0 0% 80%) !important;
+}
+
+.light .border-zinc-700 {
+    border-color: hsl(0 0% 72%) !important;
+}
+
+/* Text */
+.light .text-white {
+    color: hsl(0 0% 9%) !important;
+}
+
+.light .text-zinc-300 {
+    color: hsl(0 0% 22%) !important;
+}
+
+.light .text-zinc-400 {
+    color: hsl(0 0% 30%) !important;
+}
+
+.light .text-zinc-500 {
+    color: hsl(0 0% 42%) !important;
+}
+
+.light .text-zinc-600 {
+    color: hsl(0 0% 50%) !important;
+}
+
+.light .text-zinc-700 {
+    color: hsl(0 0% 58%) !important;
+}
+
+.light .placeholder\:text-zinc-600::placeholder {
+    color: hsl(0 0% 56%) !important;
+}
+
+/* -- Tabs active state -- */
+.light [data-state="active"].data-\[state\=active\]\:bg-zinc-800 {
+    background-color: hsl(0 0% 83%) !important;
+    color: hsl(0 0% 9%) !important;
+}
+
+/* Hover states */
+.light .hover\:bg-zinc-900\/50:hover {
+    background-color: hsl(0 0% 90%) !important;
+}
+
+.light .hover\:bg-zinc-800:hover {
+    background-color: hsl(0 0% 83%) !important;
+}
+
+.light .hover\:text-white:hover {
+    color: hsl(0 0% 9%) !important;
+}
+
+.light .hover\:border-zinc-700:hover {
+    border-color: hsl(0 0% 66%) !important;
+}
+
+/* Semitransparent zinc backgrounds */
+.light [class*="bg-zinc-900\/50"] {
+    background-color: hsl(0 0% 91%) !important;
+}
+
+.light [class*="bg-zinc-800\/50"] {
+    background-color: hsl(0 0% 86%) !important;
+}
+
+.light [class*="border-zinc-800\/50"] {
+    border-color: hsl(0 0% 82%) !important;
+}
+
+/* Auth Specific overrides */
+.light .auth-card {
+    background-color: hsl(0 0% 100%) !important;
+    border-color: hsl(0 0% 90%) !important;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05) !important;
+}
+
+.light .bg-card {
+    background-color: hsl(0 0% 100%) !important;
+}
+
+/* Level badge colors — kept vibrant in light */
+.light .bg-red-900\/40 {
+    background-color: hsl(0 84% 96%) !important;
+}
+
+.light .bg-red-900\/30 {
+    background-color: hsl(0 84% 97%) !important;
+}
+
+.light .text-red-300 {
+    color: hsl(0 72% 34%) !important;
+}
+
+.light .text-red-400 {
+    color: hsl(0 72% 32%) !important;
+}
+
+.light .border-red-800\/50 {
+    border-color: hsl(0 72% 65%) !important;
+}
+
+.light .border-red-900\/50 {
+    border-color: hsl(0 72% 72%) !important;
+}
+
+.light .bg-yellow-900\/30 {
+    background-color: hsl(45 93% 94%) !important;
+}
+
+.light .text-yellow-400 {
+    color: hsl(38 85% 30%) !important;
+}
+
+.light .border-yellow-900\/50 {
+    border-color: hsl(45 93% 58%) !important;
+}
+
+.light .bg-blue-900\/30 {
+    background-color: hsl(214 100% 95%) !important;
+}
+
+.light .text-blue-400 {
+    color: hsl(214 90% 35%) !important;
+}
+
+.light .border-blue-900\/50 {
+    border-color: hsl(214 100% 68%) !important;
+}
+
+.light .bg-emerald-900\/30 {
+    background-color: hsl(152 76% 93%) !important;
+}
+
+.light .text-emerald-400 {
+    color: hsl(152 76% 22%) !important;
+}
+
+.light .border-emerald-900\/50 {
+    border-color: hsl(152 76% 55%) !important;
+}
+
+.light .text-emerald-500 {
+    color: hsl(152 76% 28%) !important;
+}
+
+.light .bg-emerald-500\/20 {
+    background-color: hsl(152 76% 90%) !important;
+}
+
+.light .bg-emerald-500\/10 {
+    background-color: hsl(152 76% 94%) !important;
+}
+
+/* Specific hover colors */
+.light .hover\:text-red-400:hover {
+    color: hsl(0 72% 35%) !important;
+}
+
+.light .hover\:text-emerald-400:hover {
+    color: hsl(152 76% 22%) !important;
+}
+
+.light .hover\:text-yellow-400:hover {
+    color: hsl(38 85% 30%) !important;
+}
+
+/* Code block in light */
+.light .code-block {
+    background: hsl(0 0% 95%);
+    color: hsl(0 0% 18%);
+    border-color: hsl(0 0% 80%);
+}
+
+/* datetime-local color-scheme per theme */
+.light input[type="datetime-local"] {
+    color-scheme: light;
+}
+
+.dark input[type="datetime-local"] {
+    color-scheme: dark;
+}
+
+/* charts grid in light mode */
+.light .recharts-cartesian-grid line {
+    stroke: hsl(0 0% 80%);
+}
+
+/* =================================================================
+   DYNAMIC PRIMARY COLOR OVERRIDES
+   Intercepts Tailwind emerald classes and uses our dynamic variable
+   ================================================================= */
+.text-emerald-400 {
+    color: hsl(var(--app-primary)) !important;
+}
+
+.text-emerald-500 {
+    color: hsl(var(--app-primary)) !important;
+}
+
+.text-emerald-600 {
+    color: hsl(var(--app-primary)) !important;
+}
+
+.bg-emerald-500 {
+    background-color: hsl(var(--app-primary)) !important;
+}
+
+.bg-emerald-600 {
+    background-color: hsl(var(--app-primary)) !important;
+}
+
+.hover\:text-emerald-500:hover {
+    color: hsl(var(--app-primary)) !important;
+}
+
+.hover\:bg-emerald-600:hover {
+    background-color: hsl(var(--app-primary)) !important;
+}
+
+.hover\:bg-emerald-700:hover {
+    opacity: 0.9;
+    background-color: hsl(var(--app-primary)) !important;
+}
+
+.border-emerald-500 {
+    border-color: hsl(var(--app-primary)) !important;
+}
+
+/* Translucent backgrounds using modern CSS color-mix */
+.bg-emerald-500\/10,
+.light .bg-emerald-500\/10 {
+    background-color: color-mix(in srgb, var(--app-primary-hex) 10%, transparent) !important;
+}
+
+.bg-emerald-500\/20,
+.light .bg-emerald-500\/20 {
+    background-color: color-mix(in srgb, var(--app-primary-hex) 15%, transparent) !important;
+}
+
+.border-emerald-500\/20 {
+    border-color: color-mix(in srgb, var(--app-primary-hex) 20%, transparent) !important;
+}

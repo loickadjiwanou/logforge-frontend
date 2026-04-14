@@ -1,0 +1,309 @@
+/* 
+ * Material Design System Overrides (v2.3.4 - Islands Layout)
+ * Activated when the .material class is present on the document root.
+ */
+
+.material {
+    --material-shadow-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    --material-shadow-2: 0 3px 6px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.12);
+    --material-shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    --material-shadow-4: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+/* ── TYPOGRAPHY ── */
+.material, .material body {
+    font-family: 'Raleway', sans-serif !important;
+}
+
+.material h1, .material h2, .material h3, .material h4, .material h5, .material h6 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+/* ── ISLANDS LAYOUT (Main Structure) ── */
+@media (min-width: 768px) {
+    .material .app-layout {
+        padding: 16px !important;
+        gap: 16px !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        background-color: hsl(var(--muted) / 0.3) !important; /* Semantic Floor */
+    }
+
+    .material.dark .app-layout {
+        background-color: hsl(var(--background)) !important; /* Default Dark Background */
+    }
+
+    .material .sidebar {
+        height: 100% !important;
+        min-height: 0 !important;
+        position: relative !important;
+        top: 0 !important;
+        border-radius: 16px !important;
+        box-shadow: var(--material-shadow-2) !important;
+        border: 1px solid hsl(var(--border) / 0.5) !important;
+        overflow: hidden !important;
+        background-color: hsl(var(--card)) !important;
+    }
+
+    .material.dark .sidebar {
+        background-color: hsl(var(--card)) !important;
+        box-shadow: none !important;
+        border: 1px solid hsl(var(--border)) !important;
+    }
+
+    .material .app-main {
+        border-radius: 16px !important;
+        box-shadow: var(--material-shadow-2) !important;
+        background-color: hsl(var(--card)) !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        min-height: 0 !important; /* Override Tailwind min-h-screen */
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important; /* This clips the footer corners */
+        border: 1px solid hsl(var(--border) / 0.5) !important;
+    }
+
+    .material.dark .app-main {
+        background-color: hsl(var(--card)) !important;
+        box-shadow: none !important;
+        border: 1px solid hsl(var(--border)) !important;
+    }
+
+    .material .app-main > div:first-child {
+        flex: 1 !important;
+        overflow-y: auto !important;
+    }
+
+    /* Ensure footer doesn't break the island look */
+    .material .app-main footer {
+        border-top: none !important;
+        background-color: transparent !important;
+        padding-bottom: 24px !important; /* Extra breathing room at bottom */
+    }
+}
+
+/* ── UNIVERSAL ELEVATIONS (BOXES) ── */
+:root.material:not(.dark) .card,
+:root.material:not(.dark) [role="tabpanel"],
+:root.material:not(.dark) .bg-card,
+:root.material:not(.dark) .chart-container,
+:root.material:not(.dark) .log-explorer-container,
+:root.material:not(.dark) .project-box,
+:root.material:not(.dark) .group-item,
+:root.material:not(.dark) .docker-log-display,
+:root.material:not(.dark) .settings-section {
+    box-shadow: var(--material-shadow-1) !important;
+    border: none !important;
+    border-radius: 12px;
+    background-color: hsl(var(--card)) !important;
+}
+
+/* Dark Mode: Semantic Variable Adoption */
+:root.material.dark .card,
+:root.material.dark [role="tabpanel"],
+:root.material.dark .bg-card,
+:root.material.dark .chart-container,
+:root.material.dark .project-box,
+:root.material.dark .group-item,
+:root.material.dark .settings-section {
+    box-shadow: none !important;
+    border: 1px solid hsl(var(--border)) !important;
+    border-radius: 12px;
+    background-color: hsl(var(--card) / 0.5) !important;
+}
+
+/* ── SIDEBAR POLISH ── */
+.material .sidebar-link {
+    margin: 4px 12px !important;
+    border-radius: 24px !important;
+    padding: 10px 18px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10.5px !important;
+    font-weight: 600 !important;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.material .sidebar-link:hover {
+    background-color: hsla(0, 0%, 50%, 0.08) !important;
+    transform: translateX(4px);
+}
+
+.material .sidebar-link-active {
+    background-color: hsl(var(--app-primary)) !important;
+    color: #fff !important;
+    box-shadow: var(--material-shadow-2) !important;
+}
+
+.material .sidebar-link-active:hover {
+    transform: none;
+    background-color: hsl(var(--app-primary)) !important;
+    opacity: 0.9;
+}
+
+.material .sidebar-link-active::before {
+    display: none !important;
+}
+
+/* Collapsed Sidebar Overrides */
+.material .sidebar.collapsed .sidebar-link {
+    margin: 4px 10px !important;
+    padding: 10px 0 !important;
+    justify-content: center !important;
+    border-radius: 50% !important; /* Circular active states in collapsed mode */
+    width: 44px !important;
+    height: 44px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.material .sidebar.collapsed .sidebar-link:hover {
+    transform: none !important; /* No translation in compact mode */
+}
+
+.material .sidebar.collapsed .sidebar-link svg {
+    margin: 0 !important;
+}
+
+/* User Card at the bottom */
+.material .sidebar-user-card {
+    background-color: hsla(0, 0%, 50%, 0.05) !important;
+    border: 1px solid hsla(0, 0%, 50%, 0.1) !important;
+    margin: 0 8px !important;
+    width: calc(100% - 16px) !important;
+    box-shadow: var(--material-shadow-1) !important;
+}
+
+.material .sidebar.collapsed .sidebar-user-card {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 44px !important;
+    height: 44px !important;
+    margin: 4px auto !important;
+}
+
+.material .sidebar-user-card:hover {
+    background-color: hsla(0, 0%, 50%, 0.1) !important;
+    box-shadow: var(--material-shadow-2) !important;
+    transform: translateY(-1px);
+}
+
+.material .sidebar.collapsed .sidebar-user-card:hover {
+    background-color: hsla(0, 0%, 50%, 0.08) !important;
+    transform: scale(1.1) !important;
+}
+
+/* FAQ & Logout consistency */
+.material [data-testid="nav-faq"],
+.material [data-testid="logout-btn"] {
+    margin: 4px 12px !important;
+    width: calc(100% - 24px) !important;
+    border-radius: 24px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10.5px !important;
+    font-weight: 600 !important;
+    padding: 10px 18px !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.material [data-testid="logout-btn"]:hover {
+    background-color: hsla(0, 72%, 51%, 0.1) !important;
+    color: #ef4444 !important;
+    transform: translateX(4px);
+}
+
+.material [data-testid="nav-faq"]:hover {
+    transform: translateX(4px);
+}
+
+.material .sidebar.collapsed [data-testid="nav-faq"],
+.material .sidebar.collapsed [data-testid="logout-btn"] {
+    margin: 4px auto !important;
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+}
+
+.material .sidebar.collapsed [data-testid="nav-faq"]:hover,
+.material .sidebar.collapsed [data-testid="logout-btn"]:hover {
+    transform: scale(1.1) !important;
+}
+
+/* ── COMPONENTS OVERRIDE ── */
+.material input:not([type="color"]):not([type="checkbox"]):not([type="radio"]),
+.material textarea,
+.material [role="combobox"],
+.material [role="listbox"],
+.material [data-radix-collection-item],
+.material .select-trigger,
+.material .auto-refresh-toggle {
+    border-radius: 18px !important;
+    padding-left: 16px;
+    padding-right: 16px;
+    transition: all 0.2s ease !important;
+}
+
+/* Specifically ensure search inputs have enough room for the icon */
+.material input.pl-10 {
+    padding-left: 40px !important;
+}
+
+.material button:not(.p-0) {
+    border-radius: 999px !important; /* Full Pill */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+.material button.ghost, .material button.variant-ghost {
+    background-color: transparent !important;
+}
+
+.material .footer-version-btn {
+    padding: 6px 14px !important;
+    background-color: hsla(0, 0%, 50%, 0.05) !important;
+    border: 1px solid hsla(0, 0%, 50%, 0.1) !important;
+    border-radius: 20px !important;
+}
+
+/* ── TABS ── */
+.material [role="tablist"] {
+    background-color: transparent !important;
+    border: none !important;
+    gap: 8px !important;
+    padding: 4px !important;
+    height: auto !important;
+    margin-bottom: 16px !important;
+}
+
+.material [role="tab"] {
+    border-radius: 20px !important;
+    border: 1px solid var(--border) !important;
+    background-color: transparent !important;
+    padding: 6px 16px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: var(--muted-foreground) !important;
+    transition: all 0.2s ease !important;
+}
+
+.material [role="tab"][data-state="active"] {
+    background-color: hsl(var(--app-primary)) !important;
+    color: #fff !important;
+    border-color: hsl(var(--app-primary)) !important;
+    box-shadow: var(--material-shadow-1) !important;
+}
