@@ -209,10 +209,10 @@ export default function SignupPage() {
             className="text-[11px] text-zinc-500 hover:text-emerald-500 transition-colors flex items-center justify-center gap-1.5 w-full font-medium"
           >
             <Info className="w-3.5 h-3.5" />
-            {t('version')}: v0.1.9
+            {t('version')}: v0.2.0
           </button>
           <p className="text-[11px] text-zinc-600 font-medium">
-            {appSettings?.app_name || 'LogForge'} v0.1.9 • {new Date().getFullYear()}.<br />
+            {appSettings?.app_name || 'LogForge'} v0.2.0 • {new Date().getFullYear()}.<br />
             {lang === 'fr' ? 'Tous droits réservés.' : 'All rights reserved.'}
           </p>
         </div>

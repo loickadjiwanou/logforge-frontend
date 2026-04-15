@@ -25,6 +25,7 @@ import { ChangelogModal } from '../components/layout/changelog-modal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../components/ui/dialog';
 import api from '../lib/api';
 import { Info, Mail } from 'lucide-react';
+import BackendConfig from '../components/ui/backend-config';
 
 export default function LoginPage() {
   const { t, lang, appSettings } = useLanguage();
@@ -114,7 +115,10 @@ export default function LoginPage() {
   if (step === 'email') {
     return (
       <div className="auth-page" data-testid="login-page">
-        <div className="auth-container">
+        <div className="auth-container" style={{ position: 'relative' }}>
+          <div style={{ position: 'fixed', bottom: '1rem', right: '1rem', zIndex: 50 }}>
+            <BackendConfig />
+          </div>
           <Logo />
           <Card className="auth-card">
             <CardHeader className="space-y-1 pb-4">
@@ -186,10 +190,10 @@ export default function LoginPage() {
               className="text-[11px] text-zinc-500 hover:text-emerald-500 transition-colors flex items-center justify-center gap-1.5 w-full font-medium"
             >
               <Info className="w-3.5 h-3.5" />
-              {t('version')}: v0.1.9
+              {t('version')}: v0.2.0
             </button>
             <p className="text-[11px] text-zinc-600 font-medium">
-              {appSettings?.app_name || 'LogForge'} v0.1.9 • {new Date().getFullYear()}.<br />
+              {appSettings?.app_name || 'LogForge'} v0.2.0 • {new Date().getFullYear()}.<br />
               {lang === 'fr' ? 'Tous droits réservés.' : 'All rights reserved.'}
             </p>
           </div>

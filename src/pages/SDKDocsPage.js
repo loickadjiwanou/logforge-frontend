@@ -502,7 +502,7 @@ except Exception as e:
   -e LOGFORGE_URL=${backendUrl} \\
   -e LOGFORGE_KEY=YOUR_AGENT_KEY \\
   -e MAX_RETRIES=3 \\
-  loickadj/logforge-agent:0.1.9`;
+  loickadj/logforge-agent:0.2.0`;
 
   const dockerAgentProjectRouting = `docker run -d \\
   --name project-app \\

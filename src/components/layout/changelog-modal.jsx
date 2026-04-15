@@ -11,6 +11,36 @@ import { useLanguage } from '../../lib/LanguageContext';
 
 const changelogData = [
   {
+    version: '0.2.0',
+    date: '2026-04-15',
+    changes: {
+      en: [
+        'Desktop App (Electron): LogForge is now available as a native desktop application for macOS (DMG, universal x64 + arm64), Windows (NSIS installer), and Linux (AppImage). The entire frontend is embedded inside the bundle — no browser required.',
+        'Backend URL Configuration: A server icon button on the login screen (Electron only) opens a configuration modal to set the backend URL. Includes a live connection test (ping /api/health) and persists the URL across restarts.',
+        'Dynamic Backend URL: All API calls and WebSocket connections now resolve the backend URL at runtime from localStorage, allowing reconfiguration without rebuilding the app.',
+        'HashRouter in Electron: The app automatically switches to HashRouter when running inside Electron so that file:// protocol navigation works correctly.',
+        'JS SDK v0.2.0: Fixed 4xx infinite retry loop — client errors (400–499) no longer re-queue logs. Added getVersion() method. Fixed deprecated navigator.platform usage.',
+        'Python SDK v0.2.0: Added raise_for_status() on the httpx code path so HTTP errors are properly surfaced instead of silently ignored.',
+        'Docker Agent v0.2.0: Added fatal auth detection (401/403 stops the sender loop). Added exponential backoff on retries. Fixed queue.Full blocking with put_nowait(). Added MAX_RETRIES env variable.',
+        'OpenAPI fix: Corrected invitation token validation URL from /api/invite/validate/{token} to /api/auth/invite/validate/{token}. Added all 4 /api/invitations/ endpoints (list, create, delete, resend) with full schemas.',
+        'Bundle Splitting (landing page): Vendor chunks now split into react, ui (framer-motion + lucide), and syntax-highlighter — main bundle reduced from 1.15 MB to 316 KB (−73%).',
+        'SEO (landing page): Added Open Graph, Twitter Card meta tags, robots.txt, and non-blocking Google Fonts loading.',
+      ],
+      fr: [
+        'Application Desktop (Electron) : LogForge est désormais disponible en application native pour macOS (DMG universel x64 + arm64), Windows (installeur NSIS) et Linux (AppImage). Le frontend est entièrement embarqué dans le bundle, aucun navigateur requis.',
+        'Configuration de l\'URL Backend : Un bouton icône serveur sur l\'écran de connexion (Electron uniquement) ouvre un modal de configuration pour saisir l\'URL du backend, avec test de connexion en direct et persistance entre les redémarrages.',
+        'URL Backend Dynamique : Tous les appels API et connexions WebSocket résolvent désormais l\'URL backend depuis localStorage à l\'exécution, permettant la reconfiguration sans rebuild.',
+        'HashRouter dans Electron : L\'app bascule automatiquement sur HashRouter dans Electron pour que la navigation fonctionne correctement avec le protocole file://.',
+        'JS SDK v0.2.0 : Correction de la boucle infinie de réessai sur les erreurs 4xx — les erreurs client (400–499) ne remettent plus les logs en file d\'attente. Ajout de getVersion(). Correction de navigator.platform déprécié.',
+        'Python SDK v0.2.0 : Ajout de raise_for_status() sur le chemin httpx pour que les erreurs HTTP soient correctement remontées au lieu d\'être ignorées silencieusement.',
+        'Docker Agent v0.2.0 : Détection des erreurs d\'auth fatales (401/403 arrête la boucle d\'envoi). Ajout du backoff exponentiel. Correction du blocage queue.Full avec put_nowait(). Ajout de la variable d\'env MAX_RETRIES.',
+        'Correction OpenAPI : URL de validation de token corrigée de /api/invite/validate/{token} vers /api/auth/invite/validate/{token}. Ajout des 4 endpoints /api/invitations/ (liste, création, suppression, renvoi) avec schémas complets.',
+        'Découpage des Bundles (landing page) : Les chunks vendors sont désormais séparés en react, ui (framer-motion + lucide) et syntax-highlighter — bundle principal réduit de 1,15 Mo à 316 Ko (−73%).',
+        'SEO (landing page) : Ajout des balises Open Graph, Twitter Card, robots.txt et chargement Google Fonts non bloquant.',
+      ]
+    }
+  },
+  {
     version: '0.1.9',
     date: '2026-04-14',
     changes: {
@@ -407,7 +437,7 @@ export const ChangelogModal = ({ open, onOpenChange }) => {
         <DialogHeader>
           <DialogTitle className="text-white flex items-center gap-2">
             {t('changelog')}
-            <Badge variant="outline" className="text-emerald-500 border-emerald-500/30">v0.1.9</Badge>
+            <Badge variant="outline" className="text-emerald-500 border-emerald-500/30">v0.2.0</Badge>
           </DialogTitle>
           <DialogDescription className="text-zinc-500">
             {lang === 'fr' ? 'Historique des versions et changements récents' : 'Version history and recent changes'}

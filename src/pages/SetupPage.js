@@ -472,7 +472,7 @@ const SetupPage = () => {
 
         <div className="mt-8 text-center">
           <p className={`text-xs font-medium tracking-widest uppercase opacity-50 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>
-            v0.1.9 • {new Date().getFullYear()} {formData.app_name}
+            v0.2.0 • {new Date().getFullYear()} {formData.app_name}
           </p>
         </div>
       </div>

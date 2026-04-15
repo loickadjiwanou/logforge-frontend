@@ -1,14 +1,23 @@
 import axios from 'axios';
 
-const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000').trim().replace(/\/$/, '');
-const WS_URL = (process.env.REACT_APP_WS_URL || (BACKEND_URL ? BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://') : 'ws://localhost:8000')).trim().replace(/\/$/, '');
+const getBackendUrl = () =>
+  (localStorage.getItem('logforge_backend_url') || process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000')
+    .trim().replace(/\/$/, '');
+
+const getWsUrl = () =>
+  getBackendUrl().replace('https://', 'wss://').replace('http://', 'ws://');
+
+// Kept for backwards compatibility — reflect current localStorage value at call time
+const BACKEND_URL = getBackendUrl();
+const WS_URL = getWsUrl();
 
 const api = axios.create({
-  baseURL: `${BACKEND_URL}/api`,
-  headers: { 'Content-Type': 'application/json' }
+  headers: { 'Content-Type': 'application/json' },
 });
 
 api.interceptors.request.use((config) => {
+  // Resolve the base URL on every request so changes take effect immediately
+  config.baseURL = `${getBackendUrl()}/api`;
   const token = localStorage.getItem('logforge_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -33,4 +42,4 @@ api.interceptors.response.use(
 );
 
 export default api;
-export { BACKEND_URL, WS_URL };
+export { getBackendUrl, getWsUrl, BACKEND_URL, WS_URL };

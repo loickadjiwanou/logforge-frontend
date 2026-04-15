@@ -1,4 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+
+// Use HashRouter inside Electron (file:// protocol doesn't support history API)
+const Router = window.electronAPI?.isElectron ? HashRouter : BrowserRouter;
 import { AuthProvider, useAuth } from './lib/AuthContext';
 import { LanguageProvider } from './lib/LanguageContext';
 import { Toaster } from 'sonner';
@@ -69,7 +72,7 @@ function AppRoutes() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <AuthProvider>
         <LanguageProvider>
           <div id="app-root">
@@ -78,7 +81,7 @@ function App() {
           </div>
         </LanguageProvider>
       </AuthProvider>
-    </BrowserRouter>
+    </Router>
   );
 }
 

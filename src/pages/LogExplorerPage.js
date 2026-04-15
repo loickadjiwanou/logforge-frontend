@@ -278,7 +278,7 @@ export default function LogExplorerPage() {
               {t('pageOf').replace('{page}', page).replace('{totalPages}', totalPages).replace('{total}', total)}
             </p>
             <Select value={String(size)} onValueChange={(v) => { setSize(Number(v)); setPage(1); }}>
-              <SelectTrigger className="h-8 w-[100px] bg-zinc-900 border-zinc-800 text-[10px] text-zinc-400">
+              <SelectTrigger className="h-8 w-[130px] min-w-[130px] bg-zinc-900 border-zinc-800 text-[10px] text-zinc-400">
                 <SelectValue placeholder="Page Size" />
               </SelectTrigger>
               <SelectContent>

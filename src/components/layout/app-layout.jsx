@@ -36,7 +36,7 @@ export default function AppLayout() {
               className="footer-version-btn text-[11px] text-zinc-500 hover:text-emerald-500 transition-colors flex items-center gap-1.5 font-medium"
             >
               <Info className="w-3.5 h-3.5" />
-              {appSettings?.app_name || 'LogForge'} v0.1.9
+              {appSettings?.app_name || 'LogForge'} v0.2.0
             </button>
           </div>
           <p className="text-[11px] text-zinc-400 dark:text-zinc-600 font-medium">

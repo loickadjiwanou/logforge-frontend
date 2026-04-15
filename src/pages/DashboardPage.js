@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../lib/LanguageContext';
-import api, { WS_URL } from '../lib/api';
+import api, { getWsUrl } from '../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { ScrollArea } from '../components/ui/scroll-area';
@@ -78,8 +78,8 @@ export default function DashboardPage() {
   useEffect(() => {
     let ws;
     try {
-      // Robust construction: only append if not already present in WS_URL
-      const fullWsUrl = WS_URL.includes('/api/ws/logs') ? WS_URL : `${WS_URL}/api/ws/logs`;
+      const wsBase = getWsUrl();
+      const fullWsUrl = wsBase.includes('/api/ws/logs') ? wsBase : `${wsBase}/api/ws/logs`;
       ws = new WebSocket(fullWsUrl);
       
       ws.onopen = () => {
