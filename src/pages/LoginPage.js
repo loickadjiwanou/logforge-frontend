@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { Shield, Loader2, Building2, ArrowLeft, ChevronRight } from 'lucide-react';
+import { Loader2, Building2, ArrowLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 const GithubIcon = () => (
@@ -104,7 +104,7 @@ export default function LoginPage() {
     <div className="flex items-center gap-3 mb-8">
       {appSettings?.logo_url
         ? <img src={appSettings.logo_url} alt="logo" className="w-8 h-8 object-contain rounded" />
-        : <Shield className="w-8 h-8 text-emerald-500" strokeWidth={1.5} />}
+        : <img src="/app-icon.png" alt="LogForge" className="w-8 h-8 object-contain rounded" />}
       <h1 className="font-mono font-bold text-2xl tracking-tight text-heading">
         {appSettings?.app_name || 'LogForge'}
       </h1>

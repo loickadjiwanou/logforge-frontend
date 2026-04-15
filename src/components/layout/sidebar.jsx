@@ -4,7 +4,7 @@ import { useAuth } from '../../lib/AuthContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import {
   LayoutDashboard, Search, FolderKanban, Hash,
-  BookOpen, Settings, LogOut, Shield, Layers,
+  BookOpen, Settings, LogOut, Layers,
   Menu, Container
 } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -81,7 +81,7 @@ export const Sidebar = ({ isCollapsed, toggleCollapse }) => {
                 className="w-7 h-7 object-contain rounded shrink-0"
               />
             ) : (
-              <Shield className="w-6 h-6 text-emerald-500 shrink-0" strokeWidth={1.5} />
+              <img src="/app-icon.png" alt="LogForge" className="w-7 h-7 object-contain rounded shrink-0" />
             )}
             <span className="font-mono font-bold text-lg tracking-tight text-heading truncate">
               {appSettings?.app_name || 'LogForge'}
