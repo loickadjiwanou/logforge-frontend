@@ -81,7 +81,7 @@ export const Sidebar = ({ isCollapsed, toggleCollapse }) => {
                 className="w-7 h-7 object-contain rounded shrink-0"
               />
             ) : (
-              <img src="/app-icon.png" alt="LogForge" className="w-7 h-7 object-contain rounded shrink-0" />
+              <img src={`${process.env.PUBLIC_URL}/app-icon.png`} alt="LogForge" className="w-7 h-7 object-contain rounded shrink-0" />
             )}
             <span className="font-mono font-bold text-lg tracking-tight text-heading truncate">
               {appSettings?.app_name || 'LogForge'}

@@ -104,7 +104,7 @@ export default function LoginPage() {
     <div className="flex items-center gap-3 mb-8">
       {appSettings?.logo_url
         ? <img src={appSettings.logo_url} alt="logo" className="w-8 h-8 object-contain rounded" />
-        : <img src="/app-icon.png" alt="LogForge" className="w-8 h-8 object-contain rounded" />}
+        : <img src={`${process.env.PUBLIC_URL}/app-icon.png`} alt="LogForge" className="w-8 h-8 object-contain rounded" />}
       <h1 className="font-mono font-bold text-2xl tracking-tight text-heading">
         {appSettings?.app_name || 'LogForge'}
       </h1>
