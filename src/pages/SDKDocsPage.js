@@ -497,11 +497,12 @@ except Exception as e:
 
   const dockerAgentDocs = `docker run -d \\
   --name logforge-agent \\
-  --restart always \\
+  --restart unless-stopped \\
   -v /var/run/docker.sock:/var/run/docker.sock:ro \\
   -e LOGFORGE_URL=${backendUrl} \\
   -e LOGFORGE_KEY=YOUR_AGENT_KEY \\
-  loickadj/logforge-agent:latest`;
+  -e MAX_RETRIES=3 \\
+  loickadj/logforge-agent:0.1.9`;
 
   const dockerAgentProjectRouting = `docker run -d \\
   --name project-app \\
@@ -911,7 +912,7 @@ except Exception as e:
               </div>
               <div>
                 <CardTitle className="text-sm text-white">{lang === 'fr' ? 'Référence Complète des SDKs' : 'Full SDK Reference'}</CardTitle>
-                <CardDescription className="text-xs text-zinc-500">{lang === 'fr' ? 'Documentation officielle — @loickadj/logforge-js (npm) et logforge-py (PyPI) — v0.1.9' : 'Official documentation — @loickadj/logforge-js (npm) and logforge-py (PyPI) — v0.1.9'}</CardDescription>
+                <CardDescription className="text-xs text-zinc-500">{lang === 'fr' ? 'Documentation officielle — @loickadj/logforge-js (npm) et logforge-py (PyPI) — v2.0.0' : 'Official documentation — @loickadj/logforge-js (npm) and logforge-py (PyPI) — v2.0.0'}</CardDescription>
               </div>
             </CardHeader>
             <CardContent className="space-y-6">

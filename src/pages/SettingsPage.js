@@ -1595,15 +1595,15 @@ export default function SettingsPage() {
                             <pre className="text-[10px] text-zinc-400 overflow-x-auto">
 {`docker run -d \\
   --name logforge-agent \\
-  --restart always \\
-  -v /var/run/docker.sock:/var/run/docker.sock \\
+  --restart unless-stopped \\
+  -v /var/run/docker.sock:/var/run/docker.sock:ro \\
   -e LOGFORGE_URL=${window.location.origin} \\
   -e LOGFORGE_KEY=VOTRE_CLE_AGENT \\
-  logforge/agent:latest`}
+  loickadj/logforge-agent:0.1.9`}
                             </pre>
                             <Button variant="ghost" size="sm" className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity" 
                                 onClick={() => { 
-                                    navigator.clipboard.writeText(`docker run -d --name logforge-agent -v /var/run/docker.sock:/var/run/docker.sock -e LOGFORGE_URL=${window.location.origin} -e LOGFORGE_KEY=YOUR_KEY logforge/agent:latest`);
+                                    navigator.clipboard.writeText(`docker run -d --name logforge-agent --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock:ro -e LOGFORGE_URL=${window.location.origin} -e LOGFORGE_KEY=YOUR_KEY loickadj/logforge-agent:0.1.9`);
                                     toast.success('Command copied');
                                 }}>
                                 <Copy className="w-3.5 h-3.5 text-zinc-400" />
