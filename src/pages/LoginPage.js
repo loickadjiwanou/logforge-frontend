@@ -193,8 +193,7 @@ export default function LoginPage() {
               {t('version')}: v0.2.0
             </button>
             <p className="text-[11px] text-zinc-600 font-medium">
-              {appSettings?.app_name || 'LogForge'} v0.2.0 • {new Date().getFullYear()}.<br />
-              {lang === 'fr' ? 'Tous droits réservés.' : 'All rights reserved.'}
+              Copyright © {new Date().getFullYear()} {appSettings?.app_name || 'LogForge'} Inc. All rights reserved.
             </p>
           </div>
         </div>

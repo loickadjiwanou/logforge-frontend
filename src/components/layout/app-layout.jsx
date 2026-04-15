@@ -40,7 +40,7 @@ export default function AppLayout() {
             </button>
           </div>
           <p className="text-[11px] text-zinc-400 dark:text-zinc-600 font-medium">
-            &copy; {new Date().getFullYear()} {(appSettings?.app_name || 'LogForge').trim()}. {t('allRightsReserved')}
+            Copyright &copy; {new Date().getFullYear()} {(appSettings?.app_name || 'LogForge').trim()} Inc. All rights reserved.
           </p>
           <ChangelogModal open={changelogOpen} onOpenChange={setChangelogOpen} />
         </footer>
